@@ -19,8 +19,8 @@ public class UserService {
         roles.add(new Role(3, "conductor de transporte pet-friendly"));
 
         users.add(new User(1, "Oscar", "Sanzana", "oscar.sanzana.97@gmail.com", "123Admin#", roles.get(0)));
-        users.add(new User(1, "Ellen", "Joe", "ellen.doe@gmail.com", "123afv#", roles.get(1)));
-        users.add(new User(1, "Nicole", "Demara", "nicole.demara@gmail.com", "aqea4621n#", roles.get(2)));
+        users.add(new User(2, "Ellen", "Joe", "ellen.doe@gmail.com", "123afv#", roles.get(1)));
+        users.add(new User(3, "Nicole", "Demara", "nicole.demara@gmail.com", "aqea4621n#", roles.get(2)));
     }
 
     public List<User> getUsers() {
