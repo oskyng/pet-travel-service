@@ -1,45 +1,53 @@
 package com.example.pettravelservice.service;
 
+import com.example.pettravelservice.request.CreateRoleRequest;
+import com.example.pettravelservice.request.UpdateRoleRequest;
+import com.example.pettravelservice.exception.RoleNotFoundException;
 import com.example.pettravelservice.model.Role;
+import com.example.pettravelservice.repository.IRoleRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
-public class RoleService {
-    public final List<Role> roles = new ArrayList<>();
-
-    public RoleService() {
-        roles.add(new Role(1, "admin"));
-        roles.add(new Role(2, "dueño de mascota"));
-        roles.add(new Role(3, "conductor de transporte pet-friendly"));
-    }
+public class RoleService implements IRoleService{
+    @Autowired
+    private IRoleRepository roleRepository;
 
     public List<Role> getRoles() {
-        return roles;
+        log.debug("Servicio: getRoles()");
+        return roleRepository.findAll(Sort.by("id").ascending());
     }
 
-    public Optional<Role> getRole(Integer id) {
-        return roles.stream().filter(role -> role.getId().equals(id)).findFirst();
+    public Role getRoleById(Long id) {
+        log.debug("Servicio: getRoleById({})", id);
+        return roleRepository.findById(id).orElseThrow(() -> new RoleNotFoundException(id));
     }
 
-    public Role save(Role role) {
-        roles.add(role);
-        return role;
+    public Role createRole(CreateRoleRequest request) {
+        log.debug("Servicio: createRole({})", request.getRoleName());
+        Role role = new Role();
+        role.setRoleName(request.getRoleName());
+        return roleRepository.save(role);
     }
 
-    public Role update(Role role) {
-        Optional<Role> optionalRole = getRole(role.getId());
-        return optionalRole.map(r-> {
-            r.setRoleName(role.getRoleName());
-            return r;
-        }).orElse(null);
+    public Role updateRole(UpdateRoleRequest request) {
+        log.debug("Servicio: updateRole({})", request.getId());
+        Optional<Role> foundRole = roleRepository.findById(request.getId());
+        return foundRole.map(role -> {
+            role.setRoleName(request.getRoleName() == null ? role.getRoleName() : request.getRoleName());
+            return roleRepository.save(role);
+        }).orElseThrow(() -> new RoleNotFoundException(request.getId()));
     }
 
-    public void delete(Integer id) {
-        Optional<Role> optionalRole = getRole(id);
-        roles.remove(optionalRole.orElse(null));
+    public void deleteRole(Long id) {
+        log.debug("Servicio: deleteRole({})", id);
+        Role role = roleRepository.findById(id).orElseThrow(() -> new RoleNotFoundException(id));
+        roleRepository.delete(role);
     }
 }
