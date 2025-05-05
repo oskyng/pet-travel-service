@@ -9,7 +9,6 @@ import com.example.pettravelservice.model.User;
 import com.example.pettravelservice.repository.IRoleRepository;
 import com.example.pettravelservice.repository.IUserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +18,13 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class UserService implements IUserService {
-    @Autowired
-    private IRoleRepository roleRepository;
-    @Autowired
-    private IUserRepository userRepository;
+    private final IRoleRepository roleRepository;
+    private final IUserRepository userRepository;
+
+    public UserService(IRoleRepository roleRepository, IUserRepository userRepository) {
+        this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User login(LoginRequest request) {
